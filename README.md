@@ -27,3 +27,4 @@ In this work, we are interested mainly in the insert in forward endcap. Because 
 
 For EICrecon, we are using version 1.26.1 since this is the most recent version that contains reconstruction for the EcalEndcapPInsert. This detector is set to be removed from the simulation, however at the time of this repository's creation (early August 2025), the detector is in the simulation but the output is not stored in EICrecon. Since this detector is directly in front of the insert (our main detector of interest), we revert EICrecon versions to a version with the EcalEndcapPInsert read out.
 
+<img width="1291" height="783" alt="Image" src="https://github.com/user-attachments/assets/cf1c7996-3102-42db-95e7-9f593804faa0" />
