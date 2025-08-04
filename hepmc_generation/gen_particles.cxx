@@ -27,12 +27,12 @@ void gen_particles(
                     const char* out_fname = "gen_particles.hepmc", 
                     TString particle_name = "e-",
                     double th_min = 3., // Minimum polar angle, in degrees
-		                double th_max = 3., // Maximum polar angle, in degrees
-		                double phi_min = 0., // Minimum azimuthal angle, in degrees
+		            double th_max = 3., // Maximum polar angle, in degrees
+		            double phi_min = 0., // Minimum azimuthal angle, in degrees
                     double phi_max = 360., // Maximum azimuthal angle, in degrees
                     double p_low = 10.,  // Momentum in GeV/c,
                     double p_high = 100.,
-		                TString dist = "log10continuous"  // Momentum distribution: fixed, uniform, 
+                    TString dist = "log10continuous"  // Momentum distribution: fixed, uniform, 
                                               // Gaussian, log10continuous, discrete
                   )
 { 
@@ -96,10 +96,16 @@ void gen_particles(
     else if(dist == "discrete")
     {
       // For discrete in log10
-      const int num_loguniform_energies = 34; // 36 for up to 300 GeV, 49 for up to 1 TeV, 34 for 250 GeV
-      const int random_power = (int) r1->Uniform(23, num_loguniform_energies);
-      double random_pow = (random_power*0.0423)+1;
-      pevent = (int) pow(10, random_pow);
+      const int num_loguniform_energies = 15; // The number of unique energy values between p_low and p_high
+
+      // Creating num_loguniform_energies evenly spaced energy values within [p_low, p_high]
+      const double logE_low = log10(p_low);
+      const double logE_high = log10(p_high);
+      const double step_size = (logE_high - logE_low)/(num_loguniform_energies - 1);
+      const int energy_bin_index = static_cast<int>(r1->Uniform(0, num_loguniform_energies));
+      double random_power = logE_low + step_size * energy_bin_index;
+    
+      pevent = static_cast<int>(pow(10, random_power));
     }
 
     double px    = pevent * std::cos(phi) * std::sin(th);
