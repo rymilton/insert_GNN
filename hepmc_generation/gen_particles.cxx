@@ -106,6 +106,13 @@ void gen_particles(
       double random_power = logE_low + step_size * energy_bin_index;
     
       pevent = static_cast<int>(pow(10, random_power));
+      // std::vector<int> energies = {
+      //     1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 20, 23, 26,
+      //     31, 35, 41, 47, 55, 63, 73, 84, 97, 112, 129, 150
+      // };
+
+      int index = static_cast<int>(r1->Uniform(0, energies.size()));
+      pevent = energies[index];
     }
 
     double px    = pevent * std::cos(phi) * std::sin(th);
