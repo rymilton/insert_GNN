@@ -1,0 +1,129 @@
+<!-- SPDX-License-Identifier: LGPL-3.0-or-later -->
+<!-- Copyright (C) 2022 Ryan Milton -->
+
+<lccdd>
+
+  <info name="forward_insert.xml"
+        title="Forward HCal Insert Calorimeter"
+        author="@rymilton"
+        url="https://github.com/rymilton"
+        status="development"
+        version="1.0"
+          ><comment/></info>
+
+  <define>
+     <documentation>
+      #### Material Thickness
+    </documentation>
+    <constant name="HcalEndcapPInsertAirThickness"               value="0.02*cm"/>
+    <constant name="HcalEndcapPInsertAbsorberThickness"          value="1.52*cm"/>
+    <constant name="HcalEndcapPInsertScintillatorCoverThickness" value="0.08*cm"/>
+    <constant name="HcalEndcapPInsertPolystyreneThickness"       value="0.30*cm"/>
+    <constant name="HcalEndcapPInsertPCBThickness"               value="0.08*cm"/>
+    <constant name="HcalEndcapPInsertESRFoilThickness"           value="0.015*cm"/>
+
+    <constant name="LFHCAL_FrontWallThickness"                   value="1.50*cm"/>
+
+    <documentation>
+      - Insert N Layers and computed Thickness
+    </documentation>
+
+    <constant name="HcalEndcapPInsertFrontLayerThickness"
+      value="LFHCAL_FrontWallThickness +
+             HcalEndcapPInsertAirThickness +
+             HcalEndcapPInsertScintillatorCoverThickness +
+             HcalEndcapPInsertESRFoilThickness +
+             HcalEndcapPInsertPolystyreneThickness +
+             HcalEndcapPInsertESRFoilThickness +
+             HcalEndcapPInsertPCBThickness +
+             HcalEndcapPInsertAirThickness "
+    />
+    <constant name="HcalEndcapPInsertSingleLayerThickness"
+      value="HcalEndcapPInsertAbsorberThickness +
+             HcalEndcapPInsertAirThickness +
+             HcalEndcapPInsertScintillatorCoverThickness +
+             HcalEndcapPInsertESRFoilThickness +
+             HcalEndcapPInsertPolystyreneThickness +
+             HcalEndcapPInsertESRFoilThickness +
+             HcalEndcapPInsertPCBThickness +
+             HcalEndcapPInsertAirThickness "
+    />
+    <constant name="HcalEndcapPInsertBackplateThickness"    value="HcalEndcapPInsertAbsorberThickness"/>
+    <constant name="HcalEndcapPInsertLayer_NSteelRepeat"    value="60"/>
+  </define>
+
+  <detectors>
+     <documentation>
+      ### Forward (Positive Z) Endcap Insert for Hadronic Calorimeter
+      Insert goes in the middle of the forward endcap HCal -- around the beampipe
+
+      Insert is 60 layers of Steel/Sc + 1 backplate of steel
+      Each of the layers (sans backplate) includes air gaps (front and back of each layer),
+      ESR foil (front and back of scintillator), a PCB, and an aluminum scitnillator cover
+
+      Circular hole is cut out from each layer to account for the beampipe
+      Hole will change in size and position throughout layers due to angled (from crossing angle) and cone-shaped beampipe
+      Hole radius is beampipe radius + 3.85 cm of clearance
+
+    </documentation>
+    <detector
+      id="HcalEndcapPInsert_ID"
+      name="HcalEndcapPInsert"
+      type="epic_InsertCalorimeter"
+      vis="HcalEndcapInsertVis"
+      readout="HcalEndcapPInsertHits"
+      calorimeterType="HAD_ENDCAP"
+      left_right_gap="0.38*cm"
+    >
+      <position x="HcalEndcapPInsert_xposition" y="HcalEndcapPInsert_yposition" z="HcalEndcapPInsert_zmin"/>
+      <dimensions
+        x="HcalEndcapPInsert_width"
+        y="HcalEndcapPInsert_height"
+        z="HcalEndcapPInsert_length"
+      />
+      <backplate thickness="HcalEndcapPInsertBackplateThickness"/>
+      <comment> Steel/Sc layers </comment>
+      <layer repeat="HcalEndcapPInsertLayer_NSteelRepeat" thickness="HcalEndcapPInsertSingleLayerThickness" vis="InvisibleWithDaughters">
+        <slice material="Steel235" thickness="HcalEndcapPInsertAbsorberThickness" vis="LFHCAL8MModVis"/>
+        <slice material="Air" thickness="HcalEndcapPInsertAirThickness"/>
+        <slice material="Aluminum" thickness="HcalEndcapPInsertScintillatorCoverThickness" vis="AnlProcess_Blue"/>
+        <slice material="Polystyrene" thickness="HcalEndcapPInsertESRFoilThickness" vis="AnlGray"/>
+        <slice material="Polystyrene" thickness="HcalEndcapPInsertPolystyreneThickness"  sensitive="true" limits="cal_limits" vis="AnlLightGray"/>
+        <slice material="Polystyrene" thickness="HcalEndcapPInsertESRFoilThickness" vis="AnlGray"/>
+        <slice material="Fr4" thickness="HcalEndcapPInsertPCBThickness"/>
+        <slice material="Air" thickness="HcalEndcapPInsertAirThickness"/>
+      </layer>
+      <comment> Final layer of steel </comment>
+      <layer repeat="1" thickness="HcalEndcapPInsertBackplateThickness">
+        <slice material="Steel235" thickness="HcalEndcapPInsertBackplateThickness" vis="LFHCAL8MModVis"/>
+      </layer>
+      <documentation>
+        initial_hole_radius: Hole radius in first layer
+        final_hole_radius: Hole radius in steel backplate
+        initial_hole_x/y: Hole x/y position (global coordinates) in first layer
+        final_hole_x/y: Hole x/y position (global coordinates) in steel backplate
+        Initial hole parameters are the same for the hole in the ecal insert
+      </documentation>
+      <beampipe_hole
+        initial_hole_radius="EcalEndcapPInsert_hole_radius"
+        final_hole_radius="17.17*cm"
+        initial_hole_x="EcalEndcapPInsert_hole_xposition"
+        final_hole_x="-10.44*cm"
+        initial_hole_y="EcalEndcapPInsert_hole_yposition"
+        final_hole_y="0.*cm"
+      />
+    </detector>
+  </detectors>
+
+  <readouts>
+    <documentation>
+      Readout is divided into 5x5 cm^2 squares
+    </documentation>
+    <readout name="HcalEndcapPInsertHits">
+      <segmentation type="CartesianGridXY" grid_size_x="50 * mm" grid_size_y="50 * mm"/>
+      <id>system:8,side:1,layer:8,slice:7,x:32:-16,y:-16</id>
+    </readout>
+
+  </readouts>
+
+</lccdd>
