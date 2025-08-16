@@ -14,6 +14,7 @@ function print_the_help {
   echo "    -thmax, --theta_max     Maximum theta (degrees)" 
   echo "                            theta (polar angle) will generate uniformly between theta_min and theta_max"
   echo "    -jid, --jid             job ID"  
+  echo "    --group                 flag to group layers"
   exit
 }
 
@@ -30,6 +31,7 @@ phi_max=360. # in degrees
 distribution="log10continuous"
 physics_list="FTFP_BERT"
 job_id=000
+group_layers=false
 
 while [ True ]; do
 if [ "$1" = "--help" -o "$1" = "-h" ]; then
@@ -53,12 +55,21 @@ elif [ "$1" = "-thmin" -o "$1" = "--theta_min" ]; then
 elif [ "$1" = "-thmax" -o "$1" = "--theta_max" ]; then
    theta_max=$2
    shift 2 # past argument
+elif [ "$1" = "-phimin" -o "$1" = "--phi_min" ]; then
+   phi_min=$2
+   shift 2 # past argument
+elif [ "$1" = "-phimax" -o "$1" = "--phi_max" ]; then
+   phi_max=$2
+   shift 2 # past argument
 elif [ "$1" = "-dist" -o "$1" = "--distribution" ]; then
    distribution=$2
    shift 2 # past argument
 elif [ "$1" = "-jid" -o "$1" = "--jid" ]; then
    job_id=$2
    shift 2 # past argument
+elif [ "$1" = "--group" ]; then
+   group_layers=true
+   shift 1
 else
    break
 fi
@@ -71,7 +82,7 @@ simfile="sim_${info_string}.edm4hep.root"
 recofile="reco_${info_string}.edm4hep.root"
 
 # Generating hepmc file
-root -l -b -q "./gen_particles.cxx(\
+root -l -b -q "./hepmc_generation/gen_particles.cxx(\
 ${num_events},\
 \"${hepmcfile}\",\
 \"${particle}\",\
@@ -97,3 +108,7 @@ eicrecon \
 -Ppodio:output_file=${recofile} \
 -Ppodio:output_collections=EcalEndcapPRecHits,EcalEndcapPInsertRecHits,HcalEndcapPInsertRecHits,LFHCALRecHits,MCParticles \
 ${simfile}
+
+if [ "$group_layers" = true ] ; then
+   root -l -b -q "./group_layers.cxx(\"./\", \"${recofile}\")"
+fi
