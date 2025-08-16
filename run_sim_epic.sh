@@ -21,11 +21,11 @@ function print_the_help {
 # Input simulation parameters
 
 particle="neutron"
-energy_min=10
-energy_max=100
-num_events=100
-theta_min=1.273 # in degrees
-theta_max=5.7 # in degrees
+energy_min=1
+energy_max=150
+num_events=10000
+theta_min=2.3 # in degrees
+theta_max=4.25 # in degrees
 phi_min=0. # in degrees
 phi_max=360. # in degrees 
 distribution="log10continuous"
