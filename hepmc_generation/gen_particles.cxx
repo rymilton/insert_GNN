@@ -111,8 +111,8 @@ void gen_particles(
       //     31, 35, 41, 47, 55, 63, 73, 84, 97, 112, 129, 150
       // };
 
-      int index = static_cast<int>(r1->Uniform(0, energies.size()));
-      pevent = energies[index];
+      // int index = static_cast<int>(r1->Uniform(0, energies.size()));
+      // pevent = energies[index];
     }
 
     double px    = pevent * std::cos(phi) * std::sin(th);
